@@ -1,0 +1,13 @@
+.productList {
+  list-style-type: none;
+  padding: 0;
+}
+
+.productList li {
+  border-bottom: 1px solid #ccc;
+  padding: 1rem 0;
+}
+
+.productList li:last-child {
+  border-bottom: none;
+}
