@@ -12,12 +12,12 @@ const Header = () => {
     <header className="sticky top-0 z-40 bg-cream border-b-4 border-charcoal px-6 lg:px-12 py-4">
       <nav className="max-w-7xl mx-auto flex items-center justify-between" aria-label="Main navigation">
         {/* Logo */}
-        <Link href="/" id="nav-logo-link" className="flex items-center gap-3 group no-underline" aria-label="Woodyz Home">
+        <Link href="/" id="nav-logo-link" className="flex items-center gap-3 group no-underline" aria-label="WOODYZ Home">
           <div className="w-12 h-12 bg-cedar border-2 border-charcoal rounded-2xl flex items-center justify-center transform group-hover:rotate-12 transition-transform shadow-[4px_4px_0px_0px_#3A322B]">
             <iconify-icon icon="ph:horse-bold" class="text-white text-3xl"></iconify-icon>
           </div>
           <div className="flex flex-col">
-            <span className="font-display text-3xl font-black leading-none tracking-tighter text-charcoal">Woodyz</span>
+            <span className="font-display text-3xl font-black leading-none tracking-tighter text-charcoal">WOODYZ</span>
             <span className="text-[8px] font-bold tracking-[0.3em] uppercase opacity-60">Sustainable Play</span>
           </div>
         </Link>
@@ -30,18 +30,18 @@ const Header = () => {
             </Link>
           </li>
           <li>
-            <Link href="#categories" id="nav-categories" className="hover:text-cedar transition-colors border-b-2 border-transparent hover:border-cedar pb-1 no-underline text-charcoal">
+            <Link href="/#categories" id="nav-categories" className="hover:text-cedar transition-colors border-b-2 border-transparent hover:border-cedar pb-1 no-underline text-charcoal">
               Categories
             </Link>
           </li>
           <li>
-            <Link href="#impact" id="nav-about" className="hover:text-cedar transition-colors border-b-2 border-transparent hover:border-cedar pb-1 no-underline text-charcoal">
+            <Link href="/#impact" id="nav-about" className="hover:text-cedar transition-colors border-b-2 border-transparent hover:border-cedar pb-1 no-underline text-charcoal">
               Impact
             </Link>
           </li>
           <li>
-            <Link href="#" id="nav-journal" className="hover:text-cedar transition-colors border-b-2 border-transparent hover:border-cedar pb-1 no-underline text-charcoal">
-              Journal
+            <Link href="/ai" id="nav-journal" className="hover:text-cedar transition-colors border-b-2 border-transparent hover:border-cedar pb-1 no-underline text-charcoal">
+              Brand Info
             </Link>
           </li>
         </ul>
@@ -106,22 +106,22 @@ const Header = () => {
               </Link>
             </li>
             <li>
-              <Link href="#categories" className="block py-2 hover:text-cedar transition-colors text-charcoal no-underline" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/#categories" className="block py-2 hover:text-cedar transition-colors text-charcoal no-underline" onClick={() => setMobileMenuOpen(false)}>
                 Categories
               </Link>
             </li>
             <li>
-              <Link href="#impact" className="block py-2 hover:text-cedar transition-colors text-charcoal no-underline" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/#impact" className="block py-2 hover:text-cedar transition-colors text-charcoal no-underline" onClick={() => setMobileMenuOpen(false)}>
                 Impact
               </Link>
             </li>
             <li>
-              <Link href="#" className="block py-2 hover:text-cedar transition-colors text-charcoal no-underline" onClick={() => setMobileMenuOpen(false)}>
-                Journal
+              <Link href="/ai" className="block py-2 hover:text-cedar transition-colors text-charcoal no-underline" onClick={() => setMobileMenuOpen(false)}>
+                Brand Info
               </Link>
             </li>
             <li>
-              <Link href="#newsletter" className="inline-block mt-2 btn-pop bg-cedar text-white border-2 border-charcoal px-6 py-2.5 rounded-2xl font-black text-xs uppercase tracking-widest no-underline" onClick={() => setMobileMenuOpen(false)}>
+              <Link href="/auth/register" className="inline-block mt-2 btn-pop bg-cedar text-white border-2 border-charcoal px-6 py-2.5 rounded-2xl font-black text-xs uppercase tracking-widest no-underline" onClick={() => setMobileMenuOpen(false)}>
                 Join Club
               </Link>
             </li>

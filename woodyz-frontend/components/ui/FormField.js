@@ -17,7 +17,8 @@ export default function FormField({
 
   const renderInput = () => {
     if (type === 'textarea') {
-      return <textarea id={id} className={combined} {...inputProps} />;
+      const { type: _t, ...textareaProps } = inputProps;
+      return <textarea id={id} className={combined} {...textareaProps} />;
     }
     if (type === 'select') {
       return (

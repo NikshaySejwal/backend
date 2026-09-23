@@ -11,7 +11,7 @@ export default function Document() {
         />
         {/* Iconify for Icons */}
         <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js" defer></script>
-        <meta name="description" content="Woodyz — Playful eco-friendly wooden toys. Handcrafted, sustainable, and safe for happy little explorers." />
+        <meta name="theme-color" content="#3A322B" />
       </Head>
       <body>
         <Main />

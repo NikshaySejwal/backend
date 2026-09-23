@@ -39,7 +39,7 @@ export default function AdminLayout({
             <iconify-icon icon="ph:gear-six-bold" class="text-white text-xl"></iconify-icon>
           </div>
           <span className="font-display text-2xl font-black tracking-tighter">
-            Woodyz Admin
+            WOODYZ Admin
           </span>
         </div>
 

@@ -1,35 +1,25 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useAuth } from '../context/AuthContext';
-import { useRouter } from 'next/router';
-import axios from 'axios';
+import { useAuthGuard } from '../hooks/useAuthGuard';
+import LoadingScreen from '../components/ui/LoadingScreen';
+import api from '../lib/api';
 
 export default function UserProfile() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
+  const { user, isReady } = useAuthGuard();
   const [reviews, setReviews] = useState([]);
   const [tickets, setTickets] = useState([]);
   const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
-    if (!loading) {
-      if (!user) {
-        router.push('/auth/login');
-      } else {
-        fetchProfileData();
-      }
-    }
-  }, [user, loading]);
+    if (isReady) fetchProfileData();
+  }, [isReady, user]);
 
   const fetchProfileData = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const authHeader = { headers: { Authorization: `Bearer ${token}` } };
-      
       const [reviewsRes, ticketsRes] = await Promise.all([
-        axios.get('http://localhost:8080/api/reviews/user', authHeader),
-        axios.get('http://localhost:8080/api/support/user', authHeader)
+        api.get('/api/reviews/user'),
+        api.get('/api/support/user')
       ]);
       setReviews(reviewsRes.data);
       setTickets(ticketsRes.data);
@@ -40,21 +30,12 @@ export default function UserProfile() {
     }
   };
 
-  if (loading || fetching) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-cream">
-        <div className="animate-pulse flex flex-col items-center">
-          <iconify-icon icon="ph:horse-bold" class="text-6xl text-cedar mb-4"></iconify-icon>
-          <p className="font-display text-2xl font-black text-charcoal/40">Gathering your treasures...</p>
-        </div>
-      </div>
-    );
-  }
+  if (!isReady || fetching) return <LoadingScreen message="Gathering your treasures..." />;
 
   return (
     <>
       <Head>
-        <title>My Adventure Profile | Woodyz</title>
+        <title>My Adventure Profile | WOODYZ</title>
       </Head>
 
       <section className="py-20 px-6">

@@ -1,11 +1,12 @@
 // pages/products/[id].js
 import { useState, useEffect } from 'react';
-import axios from 'axios';
 import { useRouter } from 'next/router';
 import Link from 'next/link';
 import Head from 'next/head';
 import { useCart } from '../../context/CartContext';
 import ProductReviews from '../../components/ProductReviews';
+import api from '../../lib/api';
+import Seo from '../../components/Seo';
 
 export default function ProductDetail() {
   const router = useRouter();
@@ -24,7 +25,7 @@ export default function ProductDetail() {
 
   const fetchProduct = async (productId) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/products/${productId}`);
+      const response = await api.get(`/api/products/${productId}`);
       setProduct(response.data);
     } catch (err) {
       setError("Failed to load product");
@@ -33,7 +34,7 @@ export default function ProductDetail() {
 
   const fetchReviewSummary = async (productId) => {
     try {
-      const response = await axios.get(`http://localhost:8080/api/reviews/product/${productId}/summary`);
+      const response = await api.get(`/api/reviews/product/${productId}/summary`);
       setReviewSummary(response.data);
     } catch (err) {
       console.error("Failed to fetch review summary", err);
@@ -72,9 +73,33 @@ export default function ProductDetail() {
 
   return (
     <>
+      <Seo
+        title={`${product.name} | WOODYZ`}
+        description={product.description}
+        path={`/products/${product.id}`}
+      />
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{
+          __html: JSON.stringify({
+            '@context': 'https://schema.org',
+            '@type': 'Product',
+            name: product.name,
+            description: product.description,
+            image: product.imageUrl ? [product.imageUrl] : undefined,
+            category: product.category || undefined,
+            brand: { '@type': 'Brand', name: 'WOODYZ' },
+            offers: {
+              '@type': 'Offer',
+              priceCurrency: 'USD',
+              price: product.price,
+              url: `https://www.woodyz.in/products/${product.id}`,
+            },
+          }),
+        }}
+      />
       <Head>
-        <title>{product.name} | Woodyz Playful Eco-Toys</title>
-        <meta name="description" content={product.description} />
+        <title>{product.name} | WOODYZ</title>
       </Head>
 
       <section className="py-16 px-6">
@@ -94,7 +119,7 @@ export default function ProductDetail() {
               <div className="absolute -inset-3 bg-sage rounded-[56px] border-4 border-charcoal rotate-2 -z-10 shadow-[10px_10px_0px_0px_#3A322B]"></div>
               <div className="bg-white rounded-[48px] border-4 border-charcoal p-4 flex items-center justify-center aspect-square overflow-hidden">
                 {product.imageUrl ? (
-                  <img src={product.imageUrl} alt={product.name} className="w-full h-full object-cover rounded-[32px]" />
+                  <img src={product.imageUrl} alt={`WOODYZ ${product.name}`} className="w-full h-full object-cover rounded-[32px]" />
                 ) : (
                   <iconify-icon icon="ph:cube-bold" class="text-[120px] text-cedar/20"></iconify-icon>
                 )}

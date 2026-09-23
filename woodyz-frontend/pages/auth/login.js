@@ -22,8 +22,8 @@ export default function Login() {
   return (
     <>
       <Head>
-        <title>Login | Woodyz Playful Eco-Toys</title>
-        <meta name="description" content="Log into your Woodyz account to manage orders and track your sustainable toy collection." />
+        <title>Login | WOODYZ</title>
+        <meta name="description" content="Log into your WOODYZ account to manage orders and track your sustainable wooden toy collection." />
       </Head>
 
       <section className="py-16 lg:py-24 px-6">
@@ -34,7 +34,7 @@ export default function Login() {
               <iconify-icon icon="ph:user-bold" class="text-white text-4xl"></iconify-icon>
             </div>
             <h1 className="font-display text-5xl font-black text-3d mb-3">Welcome Back!</h1>
-            <p className="text-lg font-medium text-charcoal/60">Log in to continue your Woodyz journey.</p>
+            <p className="text-lg font-medium text-charcoal/60">Log in to continue your WOODYZ journey.</p>
           </div>
 
           {/* Form Card */}

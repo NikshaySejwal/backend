@@ -10,8 +10,9 @@ import OrderSummary from '../components/ui/OrderSummary';
 import FormField from '../components/ui/FormField';
 import api from '../lib/api';
 
-// Replace with your actual Stripe publishable key
-const stripePromise = loadStripe('pk_test_placeholder');
+const stripePromise = process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY
+  ? loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY)
+  : null;
 
 export default function Checkout() {
   const { cartItems, cartTotal, clearCart, isLoaded } = useCart();
@@ -20,28 +21,25 @@ export default function Checkout() {
   const [clientSecret, setClientSecret] = useState("");
   const router = useRouter();
 
-  // If not loaded yet, don't run redirect logic
-  if (!isLoaded) return null;
-
   // Fetch Payment Intent when the component mounts or cart total changes
   useEffect(() => {
     if (cartTotal > 0) {
       api.post('/api/payments/create-payment-intent', {
-        amount: cartTotal,
-        currency: 'usd'
+        items: cartItems.map((item) => ({ productId: item.id, quantity: item.quantity }))
       })
       .then(res => setClientSecret(res.data.clientSecret))
       .catch(err => console.error("Error fetching payment intent", err));
     }
   }, [cartTotal]);
 
-  const handleOrderCompletion = async () => {
+  // If not loaded yet, don't run redirect logic
+  if (!isLoaded) return null;
+
+  const handleOrderCompletion = async (paymentIntentId) => {
     try {
       await api.post('/api/orders/', {
-        userId: user ? user.id : null,
-        totalAmount: cartTotal,
-        status: 'Paid', // Mark as paid since Stripe confirmed it
-        customerEmail: user ? user.email : 'guest@example.com'
+        paymentIntentId,
+        items: cartItems.map((item) => ({ productId: item.id, quantity: item.quantity }))
       });
       
       alert('Payment Successful! An order confirmation email has been sent.');
@@ -50,12 +48,6 @@ export default function Checkout() {
     } catch (error) {
       console.error(error);
       alert('Payment successful, but failed to record order. Please contact support.');
-    }
-  };
-
-  const handleTestPayment = () => {
-    if (confirm("Test Mode: Bypass Stripe and confirm payment?")) {
-      handleOrderCompletion();
     }
   };
 
@@ -69,7 +61,7 @@ export default function Checkout() {
   return (
     <>
       <Head>
-        <title>Checkout | Woodyz Playful Eco-Toys</title>
+        <title>Checkout | WOODYZ</title>
       </Head>
 
       <section className="py-16 px-6">
@@ -119,15 +111,6 @@ export default function Checkout() {
                     </div>
                   )}
 
-                  <div className="mt-6 border-t-2 border-charcoal/10 pt-6 text-center">
-                    <p className="text-xs font-bold text-charcoal/40 mb-2">Developer Mode</p>
-                    <button 
-                      onClick={handleTestPayment}
-                      className="text-xs font-black uppercase tracking-widest text-orange hover:underline"
-                    >
-                      Bypass Payment (Test)
-                    </button>
-                  </div>
                 </div>
               </div>
 

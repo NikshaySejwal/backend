@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/router';
 import { useAuth } from '../context/AuthContext';
+import LoadingScreen from '../components/ui/LoadingScreen';
 
 /**
  * Protects a page by requiring authentication (and optionally a specific role).
@@ -9,7 +10,7 @@ import { useAuth } from '../context/AuthContext';
  * @param {Object} options
  * @param {string|null} options.requiredRole - e.g. 'ADMIN'. Null = any authenticated user.
  * @param {string} options.redirectTo - Where to send unauthenticated users.
- * @returns {{ user: object|null, isReady: boolean }}
+ * @returns {{ user: object|null, isReady: boolean, LoadingComponent: React.Component|null }}
  */
 export function useAuthGuard({ requiredRole = null, redirectTo = '/auth/login' } = {}) {
   const { user, loading } = useAuth();
@@ -25,5 +26,9 @@ export function useAuthGuard({ requiredRole = null, redirectTo = '/auth/login' }
     }
   }, [user, loading, requiredRole, redirectTo, router]);
 
-  return { user, isReady: !loading && !!user };
+  return { 
+    user, 
+    isReady: !loading && !!user,
+    LoadingComponent: loading ? LoadingScreen : null
+  };
 }

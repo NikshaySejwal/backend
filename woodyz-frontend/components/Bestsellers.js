@@ -56,7 +56,7 @@ const Bestsellers = () => {
           <div className="max-w-xl text-center md:text-left">
             <h2 className="font-display text-6xl font-black tracking-tighter mb-6">Bestsellers &amp; More</h2>
             <p className="text-xl text-white/70 font-medium mb-8">
-              Handpicked by experts, loved by little ones. These are the pieces that define the Woodyz experience.
+              Handpicked by experts, loved by little ones. These are the pieces that define the WOODYZ experience.
             </p>
             <div className="flex justify-center md:justify-start gap-4">
               <Link href="/products" className="px-8 py-3 bg-white text-charcoal rounded-full font-black text-sm uppercase btn-pop no-underline inline-block">

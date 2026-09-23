@@ -54,16 +54,6 @@ public class DataInitializer {
                 System.out.println("Sample products seeded successfully!");
             }
 
-            if (userRepository.findByUsername("admin") == null) {
-                com.example.woodyzbackend.entity.User admin = new com.example.woodyzbackend.entity.User();
-                admin.setUsername("admin");
-                admin.setEmail("admin@woodyz.com");
-                admin.setPassword(passwordEncoder.encode("admin123"));
-                admin.setRole("ADMIN");
-                userRepository.save(admin);
-                System.out.println("Admin user seeded successfully!");
-            }
-
             if (orderRepository.count() == 0) {
                 com.example.woodyzbackend.entity.Order o1 = new com.example.woodyzbackend.entity.Order();
                 o1.setUserId(1L);

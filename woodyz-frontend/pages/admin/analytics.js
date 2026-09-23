@@ -1,32 +1,20 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
-import Link from 'next/link';
-import { useAuth } from '../../context/AuthContext';
-import { useRouter } from 'next/router';
-import axios from 'axios';
+import AdminLayout from '../../components/admin/AdminLayout';
+import LoadingScreen from '../../components/ui/LoadingScreen';
+import api from '../../lib/api';
 
 export default function AdminAnalytics() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
   const [stats, setStats] = useState(null);
   const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
-    if (!loading) {
-      if (!user || user.role !== 'ADMIN') {
-        router.push('/');
-      } else {
-        fetchStats();
-      }
-    }
-  }, [user, loading]);
+    fetchStats();
+  }, []);
 
   const fetchStats = async () => {
     try {
-      const token = localStorage.getItem('token');
-      const response = await axios.get('http://localhost:8080/api/analytics/summary', {
-        headers: { Authorization: `Bearer ${token}` }
-      });
+      const response = await api.get('/api/analytics/summary');
       setStats(response.data);
     } catch (error) {
       console.error('Failed to fetch stats', error);
@@ -35,58 +23,16 @@ export default function AdminAnalytics() {
     }
   };
 
-  if (loading || fetching) {
-    return (
-      <div className="min-h-screen flex items-center justify-center bg-cream">
-        <div className="animate-pulse flex flex-col items-center">
-          <iconify-icon icon="ph:chart-line-up-bold" class="text-6xl text-cedar mb-4"></iconify-icon>
-          <p className="font-display text-2xl font-black text-charcoal/40">Gathering Insights...</p>
-        </div>
-      </div>
-    );
-  }
+  if (fetching) return <LoadingScreen icon="ph:chart-line-up-bold" message="Gathering Insights..." />;
 
   return (
     <>
       <Head>
-        <title>Analytics | Woodyz Admin</title>
+        <title>Analytics | WOODYZ Admin</title>
       </Head>
 
-      <div className="min-h-screen bg-cream flex flex-col lg:flex-row">
-        {/* Sidebar */}
-        <aside className="w-full lg:w-72 bg-white border-r-4 border-charcoal p-8 flex flex-col">
-          <div className="flex items-center gap-3 mb-12">
-            <div className="w-10 h-10 bg-cedar border-2 border-charcoal rounded-xl flex items-center justify-center shadow-[3px_3px_0px_0px_#3A322B]">
-              <iconify-icon icon="ph:gear-six-bold" class="text-white text-xl"></iconify-icon>
-            </div>
-            <span className="font-display text-2xl font-black tracking-tighter">Woodyz Admin</span>
-          </div>
-
-          <nav className="flex-grow space-y-2">
-            <Link href="/admin" className="flex items-center gap-4 p-4 hover:bg-cream border-2 border-transparent hover:border-charcoal rounded-2xl font-black text-xs uppercase tracking-widest no-underline text-charcoal/60 hover:text-charcoal transition-all">
-              <iconify-icon icon="ph:cube-bold" class="text-xl"></iconify-icon>
-              Inventory
-            </Link>
-            <Link href="/admin/analytics" className="flex items-center gap-4 p-4 bg-cedar text-white border-2 border-charcoal rounded-2xl font-black text-xs uppercase tracking-widest no-underline shadow-[4px_4px_0px_0px_#3A322B]">
-              <iconify-icon icon="ph:chart-line-up-bold" class="text-xl"></iconify-icon>
-              Analytics
-            </Link>
-            <Link href="/admin/support" className="flex items-center gap-4 p-4 hover:bg-cream border-2 border-transparent hover:border-charcoal rounded-2xl font-black text-xs uppercase tracking-widest no-underline text-charcoal/60 hover:text-charcoal transition-all">
-              <iconify-icon icon="ph:chat-circle-dots-bold" class="text-xl"></iconify-icon>
-              Support
-            </Link>
-          </nav>
-
-          <div className="mt-auto pt-8 border-t-2 border-charcoal/5">
-            <Link href="/" className="flex items-center gap-3 text-xs font-black uppercase tracking-widest text-charcoal/40 hover:text-cedar no-underline">
-              <iconify-icon icon="ph:arrow-left-bold"></iconify-icon>
-              Back to Store
-            </Link>
-          </div>
-        </aside>
-
-        {/* Main Content */}
-        <main className="flex-grow p-8 lg:p-12 overflow-y-auto">
+      <AdminLayout activeTab="analytics">
+        <main>
           <header className="mb-12">
             <h1 className="font-display text-5xl font-black text-3d mb-2">Platform Performance</h1>
             <p className="text-lg font-bold text-charcoal/40">Real-time snapshots of your enchanted marketplace.</p>
@@ -163,7 +109,7 @@ export default function AdminAnalytics() {
              </div>
           </div>
         </main>
-      </div>
+      </AdminLayout>
     </>
   );
 }

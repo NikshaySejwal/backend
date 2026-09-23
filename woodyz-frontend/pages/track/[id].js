@@ -2,26 +2,29 @@ import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
 import { useRouter } from 'next/router';
-import axios from 'axios';
+import { useAuthGuard } from '../../hooks/useAuthGuard';
+import LoadingScreen from '../../components/ui/LoadingScreen';
+import api from '../../lib/api';
 
 export default function TrackOrder() {
   const router = useRouter();
   const { id } = router.query;
+  const { isReady } = useAuthGuard();
   const [order, setOrder] = useState(null);
   const [history, setHistory] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (id) {
+    if (isReady && id) {
       fetchOrderDetails();
     }
-  }, [id]);
+  }, [id, isReady]);
 
   const fetchOrderDetails = async () => {
     try {
       const [orderRes, historyRes] = await Promise.all([
-        axios.get(`http://localhost:8080/api/orders/${id}`),
-        axios.get(`http://localhost:8080/api/orders/${id}/history`)
+        api.get(`/api/orders/${id}`),
+        api.get(`/api/orders/${id}/history`)
       ]);
       setOrder(orderRes.data);
       setHistory(historyRes.data);
@@ -32,7 +35,7 @@ export default function TrackOrder() {
     }
   };
 
-  if (loading) return <div className="min-h-screen flex items-center justify-center bg-cream font-display text-2xl font-black animate-pulse">Tracking the Compass...</div>;
+  if (!isReady || loading) return <LoadingScreen message="Tracking the Compass..." />;
   if (!order) return <div className="min-h-screen flex items-center justify-center bg-cream font-display text-2xl font-black">Order Lost in the Woods!</div>;
 
   const steps = ["Paid", "Preparing", "Shipped", "Delivered"];
@@ -41,7 +44,7 @@ export default function TrackOrder() {
   return (
     <>
       <Head>
-        <title>Track Order #{id} | Woodyz</title>
+        <title>Track Order #{id} | WOODYZ</title>
       </Head>
 
       <section className="py-20 px-6">

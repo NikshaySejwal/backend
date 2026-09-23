@@ -2,6 +2,7 @@ import { useState, useMemo } from 'react';
 import axios from 'axios';
 import Link from 'next/link';
 import Head from 'next/head';
+import Seo from '../components/Seo';
 
 export default function Products({ products }) {
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -18,8 +19,13 @@ export default function Products({ products }) {
 
   return (
     <>
+      <Seo
+        title="Wooden Toys & Products | WOODYZ"
+        description="Browse the WOODYZ collection of wooden blocks, puzzles, pull toys, train sets, and other handcrafted products."
+        path="/products"
+      />
       <Head>
-        <title>Shop All | Woodyz Playful Eco-Toys</title>
+        <title>Shop All | WOODYZ</title>
         <meta name="description" content="Browse our complete collection of sustainable, handcrafted wooden toys — building sets, puzzles, pull toys, and more." />
       </Head>
 
@@ -69,7 +75,7 @@ export default function Products({ products }) {
                       {product.imageUrl ? (
                         <img 
                           src={product.imageUrl} 
-                          alt={product.name} 
+                          alt={`WOODYZ ${product.name}`} 
                           className="w-full h-full object-cover transition-transform group-hover:scale-110"
                         />
                       ) : (

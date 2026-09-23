@@ -29,7 +29,7 @@ const TrustSection = () => {
             </div>
           </div>
           <div className="order-1 lg:order-2 space-y-10">
-            <h2 className="font-display text-6xl font-black text-3d leading-[0.9]">Why Parents <br /><span className="text-sage">Choose Woodyz.</span></h2>
+            <h2 className="font-display text-6xl font-black text-3d leading-[0.9]">Why Parents <br /><span className="text-sage">Choose WOODYZ.</span></h2>
             <div className="space-y-6">
               {features.map((f, i) => (
                 <div key={i} className="flex items-start gap-5">

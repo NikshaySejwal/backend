@@ -1,29 +1,22 @@
 import { useEffect, useState } from 'react';
 import Head from 'next/head';
 import Link from 'next/link';
-import { useAuth } from '../context/AuthContext';
-import { useRouter } from 'next/router';
-import axios from 'axios';
+import { useAuthGuard } from '../hooks/useAuthGuard';
+import LoadingScreen from '../components/ui/LoadingScreen';
+import api from '../lib/api';
 
 export default function MyOrders() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, isReady } = useAuthGuard();
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
-  const router = useRouter();
 
   useEffect(() => {
-    if (!authLoading) {
-      if (!user) {
-        router.push('/auth/login');
-      } else {
-        fetchOrders();
-      }
-    }
-  }, [user, authLoading]);
+    if (isReady) fetchOrders();
+  }, [isReady, user]);
 
   const fetchOrders = async () => {
     try {
-      const res = await axios.get(`http://localhost:8080/api/orders/user/${user.id}`);
+      const res = await api.get(`/api/orders/user/${user.id}`);
       setOrders(res.data);
     } catch (err) {
       console.error("Failed to fetch orders", err);
@@ -32,14 +25,12 @@ export default function MyOrders() {
     }
   };
 
-  if (authLoading || loading) {
-    return <div className="min-h-screen flex items-center justify-center bg-cream font-display text-2xl font-black animate-pulse">Consulting the Scrolls...</div>;
-  }
+  if (!isReady || loading) return <LoadingScreen message="Consulting the Scrolls..." />;
 
   return (
     <>
       <Head>
-        <title>My Orders | Woodyz Playful Eco-Toys</title>
+        <title>My Orders | WOODYZ</title>
       </Head>
 
       <section className="py-20 px-6">

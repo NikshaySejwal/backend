@@ -5,6 +5,9 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
+import javax.persistence.Transient;
+import com.example.woodyzbackend.dto.CheckoutItemRequest;
+import java.util.List;
 
 @Entity
 @Table(name = "orders") // 'order' is a reserved keyword in PostgreSQL
@@ -16,6 +19,10 @@ public class Order {
     private double totalAmount;
     private String status; // e.g., "Pending", "Shipped", "Delivered"
     private String customerEmail;
+    private String paymentIntentId;
+
+    @Transient
+    private List<CheckoutItemRequest> items;
 
     public Long getId() {
         return id;
@@ -55,5 +62,21 @@ public class Order {
 
     public void setCustomerEmail(String customerEmail) {
         this.customerEmail = customerEmail;
+    }
+
+    public String getPaymentIntentId() {
+        return paymentIntentId;
+    }
+
+    public void setPaymentIntentId(String paymentIntentId) {
+        this.paymentIntentId = paymentIntentId;
+    }
+
+    public List<CheckoutItemRequest> getItems() {
+        return items;
+    }
+
+    public void setItems(List<CheckoutItemRequest> items) {
+        this.items = items;
     }
 }

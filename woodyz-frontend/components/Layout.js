@@ -11,8 +11,10 @@ const Layout = ({ children }) => {
       <div className="fixed inset-0 grain-bg z-[100] pointer-events-none"></div>
 
       <Head>
-        <title>Woodyz | Playful Eco-Toys</title>
+        <title>WOODYZ | Wooden Toys & Products</title>
+        <meta name="description" content="WOODYZ wooden toys and products for thoughtful play." />
         <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" href="/favicon.ico" />
       </Head>
 
       <AnnouncementBar />

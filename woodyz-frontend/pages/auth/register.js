@@ -23,8 +23,8 @@ export default function Register() {
   return (
     <>
       <Head>
-        <title>Register | Woodyz Playful Eco-Toys</title>
-        <meta name="description" content="Create your Woodyz account to start your sustainable toy journey — join 12,000+ happy families." />
+        <title>Register | WOODYZ</title>
+        <meta name="description" content="Create your WOODYZ account to start your sustainable toy journey with handcrafted wooden treasures." />
       </Head>
 
       <section className="py-16 lg:py-24 px-6">

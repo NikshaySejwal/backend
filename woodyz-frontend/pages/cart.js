@@ -15,7 +15,7 @@ export default function Cart() {
   return (
     <>
       <Head>
-        <title>Your Bag | Woodyz Playful Eco-Toys</title>
+        <title>Your Bag | WOODYZ</title>
       </Head>
 
       <section className="py-16 lg:py-24 px-6">

@@ -3,6 +3,9 @@ package com.example.woodyzbackend.controller;
 import com.example.woodyzbackend.entity.Order;
 import com.example.woodyzbackend.service.OrderService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -17,22 +20,30 @@ public class OrderController {
     }
 
     @GetMapping("/{id}")
-    public Order getOrderById(@PathVariable Long id) {
-        return orderService.getOrderById(id);
+    public ResponseEntity<Order> getOrderById(@PathVariable Long id, Authentication authentication) {
+        Order order = orderService.getOrderById(id);
+        if (order == null || !orderService.canAccessOrder(order, authentication)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(order);
     }
 
     @GetMapping("/user/{userId}")
     public Iterable<Order> getUserOrders(@PathVariable Long userId) {
-        return orderService.getOrdersByUserId(userId);
+        return orderService.getOrdersForCurrentUser();
     }
 
     @GetMapping("/{id}/history")
-    public Iterable<com.example.woodyzbackend.entity.OrderStatusHistory> getOrderHistory(@PathVariable Long id) {
-        return orderService.getOrderHistory(id);
+    public ResponseEntity<Iterable<com.example.woodyzbackend.entity.OrderStatusHistory>> getOrderHistory(@PathVariable Long id, Authentication authentication) {
+        Order order = orderService.getOrderById(id);
+        if (order == null || !orderService.canAccessOrder(order, authentication)) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok(orderService.getOrderHistory(id));
     }
 
     @PostMapping("/")
-    public Order createOrder(@RequestBody Order order) {
-        return orderService.saveOrder(order);
+    public Order createOrder(@RequestBody Order order, Authentication authentication) {
+        return orderService.saveCustomerOrder(order, authentication);
     }
 }

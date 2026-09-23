@@ -36,4 +36,10 @@ public class StripeService {
         PaymentIntent intent = PaymentIntent.create(params);
         return intent.getClientSecret();
     }
+
+    public boolean isPaid(String paymentIntentId, double expectedAmount) throws Exception {
+        PaymentIntent intent = PaymentIntent.retrieve(paymentIntentId);
+        long expectedCents = Math.round(expectedAmount * 100);
+        return "succeeded".equals(intent.getStatus()) && intent.getAmount() == expectedCents;
+    }
 }

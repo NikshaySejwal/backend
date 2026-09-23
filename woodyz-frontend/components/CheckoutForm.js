@@ -17,7 +17,7 @@ export default function CheckoutForm({ totalAmount, onPaymentSuccess }) {
 
     setIsLoading(true);
 
-    const { error } = await stripe.confirmPayment({
+    const { error, paymentIntent } = await stripe.confirmPayment({
       elements,
       confirmParams: {
         // In a real app, this would be a "Thank You" page
@@ -37,7 +37,7 @@ export default function CheckoutForm({ totalAmount, onPaymentSuccess }) {
       }
     } else {
       // Success!
-      onPaymentSuccess();
+      onPaymentSuccess(paymentIntent?.id);
     }
 
     setIsLoading(false);
