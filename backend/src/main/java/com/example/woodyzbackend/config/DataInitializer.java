@@ -1,22 +1,34 @@
 package com.example.woodyzbackend.config;
 
-import com.example.woodyzbackend.entity.Product;
-import com.example.woodyzbackend.repository.ProductRepository;
-import com.example.woodyzbackend.repository.OrderRepository;
-import com.example.woodyzbackend.repository.OrderStatusHistoryRepository;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 
+import com.example.woodyzbackend.entity.Product;
+import com.example.woodyzbackend.entity.User;
+import com.example.woodyzbackend.repository.OrderRepository;
+import com.example.woodyzbackend.repository.OrderStatusHistoryRepository;
+import com.example.woodyzbackend.repository.ProductRepository;
+
 @Configuration
 public class DataInitializer {
 
+    @Value("${app.admin.username:}")
+    private String adminUsername;
+
+    @Value("${app.admin.password:}")
+    private String adminPassword;
+
+    @Value("${app.admin.email:admin@woodyz.local}")
+    private String adminEmail;
+
     @Bean
-    public CommandLineRunner initData(ProductRepository productRepository, 
-                                    com.example.woodyzbackend.repository.UserRepository userRepository,
-                                    OrderRepository orderRepository,
-                                    OrderStatusHistoryRepository orderHistoryRepository,
-                                    org.springframework.security.crypto.password.PasswordEncoder passwordEncoder) {
+    public CommandLineRunner initData(ProductRepository productRepository,
+            com.example.woodyzbackend.repository.UserRepository userRepository,
+            OrderRepository orderRepository,
+            OrderStatusHistoryRepository orderHistoryRepository,
+            org.springframework.security.crypto.password.PasswordEncoder passwordEncoder) {
         return args -> {
             if (productRepository.count() == 0) {
                 Product p1 = new Product();
@@ -50,8 +62,18 @@ public class DataInitializer {
                 p4.setCategory("Toys");
                 p4.setImageUrl("/images/train.png");
                 productRepository.save(p4);
-                
+
                 System.out.println("Sample products seeded successfully!");
+            }
+
+            if (!adminUsername.isBlank() && !adminPassword.isBlank() && userRepository.findByUsername(adminUsername) == null) {
+                User admin = new User();
+                admin.setUsername(adminUsername);
+                admin.setEmail(adminEmail);
+                admin.setPassword(passwordEncoder.encode(adminPassword));
+                admin.setRole("ADMIN");
+                userRepository.save(admin);
+                System.out.println("Local admin account created for username: " + adminUsername);
             }
 
             if (orderRepository.count() == 0) {

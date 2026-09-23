@@ -3,14 +3,17 @@ import Head from 'next/head';
 import AdminLayout from '../../components/admin/AdminLayout';
 import LoadingScreen from '../../components/ui/LoadingScreen';
 import api from '../../lib/api';
+import { useAuthGuard } from '../../hooks/useAuthGuard';
 
 export default function AdminAnalytics() {
+  const { isReady: authReady } = useAuthGuard({ requiredRole: 'ADMIN', redirectTo: '/' });
   const [stats, setStats] = useState(null);
   const [fetching, setFetching] = useState(true);
 
   useEffect(() => {
+    if (!authReady) return;
     fetchStats();
-  }, []);
+  }, [authReady]);
 
   const fetchStats = async () => {
     try {

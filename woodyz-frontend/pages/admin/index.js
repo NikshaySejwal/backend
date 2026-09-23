@@ -3,8 +3,10 @@ import Head from 'next/head';
 import AdminLayout from '../../components/admin/AdminLayout';
 import LoadingScreen from '../../components/ui/LoadingScreen';
 import api from '../../lib/api';
+import { useAuthGuard } from '../../hooks/useAuthGuard';
 
 export default function AdminDashboard() {
+  const { isReady: authReady } = useAuthGuard({ requiredRole: 'ADMIN', redirectTo: '/' });
   const [products, setProducts] = useState([]);
   const [fetching, setFetching] = useState(true);
   const [stats, setStats] = useState(null);
@@ -12,8 +14,9 @@ export default function AdminDashboard() {
   const [newProduct, setNewProduct] = useState({ name: '', description: '', price: '', category: '', imageUrl: '' });
 
   useEffect(() => {
+    if (!authReady) return;
     fetchData();
-  }, []);
+  }, [authReady]);
 
   const fetchData = async () => {
     try {

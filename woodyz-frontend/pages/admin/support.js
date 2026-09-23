@@ -3,15 +3,18 @@ import Head from 'next/head';
 import AdminLayout from '../../components/admin/AdminLayout';
 import LoadingScreen from '../../components/ui/LoadingScreen';
 import api from '../../lib/api';
+import { useAuthGuard } from '../../hooks/useAuthGuard';
 
 export default function AdminSupport() {
+  const { isReady: authReady } = useAuthGuard({ requiredRole: 'ADMIN', redirectTo: '/' });
   const [tickets, setTickets] = useState([]);
   const [fetching, setFetching] = useState(true);
   const [filter, setFilter] = useState('All');
 
   useEffect(() => {
+    if (!authReady) return;
     fetchTickets();
-  }, []);
+  }, [authReady]);
 
   const fetchTickets = async () => {
     try {
