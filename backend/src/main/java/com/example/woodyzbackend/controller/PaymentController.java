@@ -12,6 +12,15 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.List;
 
+/**
+ * REST controller for handling payment-related operations.
+ * Primarily manages the creation of Stripe payment intents.
+ * 
+ * Connections:
+ * - Integrates with `StripeService` to interact with the Stripe API.
+ * - Uses `ProductRepository` to perform server-side price calculation, ensuring clients cannot manipulate amounts.
+ * - Exposed via `/api/payments/**` (requires authentication).
+ */
 @RestController
 @RequestMapping("/api/payments")
 public class PaymentController {
@@ -22,6 +31,13 @@ public class PaymentController {
     @Autowired
     private ProductRepository productRepository;
 
+    /**
+     * Creates a Stripe Payment Intent based on a list of products and quantities.
+     * The total amount is calculated on the server side using product prices from the database.
+     * 
+     * @param data A map containing a list of items, where each item has `productId` and `quantity`.
+     * @return A `ResponseEntity` containing the `clientSecret` for the Stripe frontend integration.
+     */
     @PostMapping("/create-payment-intent")
     public ResponseEntity<Map<String, String>> createPaymentIntent(@RequestBody Map<String, Object> data) {
         try {

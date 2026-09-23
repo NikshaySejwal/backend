@@ -8,17 +8,39 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
 
+/**
+ * REST controller for managing customer orders.
+ * Provides endpoints for retrieving order history, specific order details, and creating new orders.
+ * 
+ * Connections:
+ * - Integrates with `OrderService` for all order-related business logic.
+ * - Uses `Authentication` to enforce ownership-based access control (ensuring users only see their own orders).
+ * - Exposed via `/api/orders/**`.
+ */
 @RestController
 @RequestMapping("/api/orders")
 public class OrderController {
     @Autowired
     private OrderService orderService;
 
+    /**
+     * Retrieves all orders in the system. 
+     * Note: Usually restricted to ADMIN via SecurityConfig.
+     * 
+     * @return An iterable of all `Order` entities.
+     */
     @GetMapping
     public Iterable<Order> getAllOrders() {
         return orderService.getAllOrders();
     }
 
+    /**
+     * Retrieves a specific order by its ID, verifying the authenticated user has permission to view it.
+     * 
+     * @param id The unique identifier of the order.
+     * @param authentication The current authenticated user's security context.
+     * @return A `ResponseEntity` containing the `Order`, or NOT_FOUND if access is denied or order doesn't exist.
+     */
     @GetMapping("/{id}")
     public ResponseEntity<Order> getOrderById(@PathVariable Long id, Authentication authentication) {
         Order order = orderService.getOrderById(id);
@@ -28,11 +50,24 @@ public class OrderController {
         return ResponseEntity.ok(order);
     }
 
+    /**
+     * Retrieves all orders belonging to the currently authenticated user.
+     * 
+     * @param userId The ID of the user (Note: service implementation uses current authentication).
+     * @return An iterable of orders for the current user.
+     */
     @GetMapping("/user/{userId}")
     public Iterable<Order> getUserOrders(@PathVariable Long userId) {
         return orderService.getOrdersForCurrentUser();
     }
 
+    /**
+     * Retrieves the status history for a specific order.
+     * 
+     * @param id The unique identifier of the order.
+     * @param authentication The current authenticated user's security context.
+     * @return A `ResponseEntity` containing the list of `OrderStatusHistory` entries.
+     */
     @GetMapping("/{id}/history")
     public ResponseEntity<Iterable<com.example.woodyzbackend.entity.OrderStatusHistory>> getOrderHistory(@PathVariable Long id, Authentication authentication) {
         Order order = orderService.getOrderById(id);
@@ -42,6 +77,13 @@ public class OrderController {
         return ResponseEntity.ok(orderService.getOrderHistory(id));
     }
 
+    /**
+     * Creates a new order for the currently authenticated customer.
+     * 
+     * @param order The order details provided in the request body.
+     * @param authentication The current authenticated user's security context.
+     * @return The newly created `Order` entity.
+     */
     @PostMapping("/")
     public Order createOrder(@RequestBody Order order, Authentication authentication) {
         return orderService.saveCustomerOrder(order, authentication);

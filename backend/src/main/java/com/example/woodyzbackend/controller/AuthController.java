@@ -18,6 +18,17 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+/**
+ * REST controller for handling authentication requests.
+ * Provides endpoints for user login and registration.
+ * 
+ * Connections:
+ * - Integrates with `AuthenticationManager` for verifying credentials.
+ * - Uses `JwtTokenProvider` to generate tokens upon successful authentication.
+ * - Uses `UserService` for user lookups and registration logic.
+ * - Uses `PasswordEncoder` for secure password handling.
+ * - Exposed via `/api/auth/**` (publicly accessible).
+ */
 @RestController
 @RequestMapping("/api/auth")
 public class AuthController {
@@ -34,6 +45,12 @@ public class AuthController {
     @Autowired
     private PasswordEncoder passwordEncoder;
 
+    /**
+     * Authenticates a user and returns a JWT token.
+     * 
+     * @param loginRequest The login credentials (username and password).
+     * @return A `ResponseEntity` containing the `JwtResponse` with the token.
+     */
     @PostMapping("/login")
     public ResponseEntity<?> authenticateUser(@RequestBody LoginRequest loginRequest) {
         Authentication authentication = authenticationManager.authenticate(
@@ -45,6 +62,12 @@ public class AuthController {
         return ResponseEntity.ok(new JwtResponse(token));
     }
 
+    /**
+     * Registers a new user in the system.
+     * 
+     * @param signUpRequest The user registration details.
+     * @return A `ResponseEntity` indicating success or error.
+     */
     @PostMapping("/signup")
     public ResponseEntity<?> registerUser(@RequestBody SignUpRequest signUpRequest) {
         if (userService.findByUsername(signUpRequest.getUsername()) != null) {
