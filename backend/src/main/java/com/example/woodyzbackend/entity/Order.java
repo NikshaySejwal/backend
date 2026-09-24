@@ -1,17 +1,21 @@
 package com.example.woodyzbackend.entity;
 
+import java.time.LocalDate;
+import java.util.List;
+
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
+
 import com.example.woodyzbackend.dto.CheckoutItemRequest;
-import java.util.List;
 
 @Entity
 @Table(name = "orders") // 'order' is a reserved keyword in PostgreSQL
 public class Order {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -20,6 +24,9 @@ public class Order {
     private String status; // e.g., "Pending", "Shipped", "Delivered"
     private String customerEmail;
     private String paymentIntentId;
+    private String deliveryAddress;
+    private LocalDate estimatedDeliveryDate;
+    private String expectedDeliveryTime;
 
     @Transient
     private List<CheckoutItemRequest> items;
@@ -70,6 +77,30 @@ public class Order {
 
     public void setPaymentIntentId(String paymentIntentId) {
         this.paymentIntentId = paymentIntentId;
+    }
+
+    public String getDeliveryAddress() {
+        return deliveryAddress;
+    }
+
+    public void setDeliveryAddress(String deliveryAddress) {
+        this.deliveryAddress = deliveryAddress;
+    }
+
+    public LocalDate getEstimatedDeliveryDate() {
+        return estimatedDeliveryDate;
+    }
+
+    public void setEstimatedDeliveryDate(LocalDate estimatedDeliveryDate) {
+        this.estimatedDeliveryDate = estimatedDeliveryDate;
+    }
+
+    public String getExpectedDeliveryTime() {
+        return expectedDeliveryTime;
+    }
+
+    public void setExpectedDeliveryTime(String expectedDeliveryTime) {
+        this.expectedDeliveryTime = expectedDeliveryTime;
     }
 
     public List<CheckoutItemRequest> getItems() {

@@ -3,6 +3,7 @@ import Head from 'next/head';
 import AdminLayout from '../../components/admin/AdminLayout';
 import LoadingScreen from '../../components/ui/LoadingScreen';
 import api from '../../lib/api';
+import { resolveAssetUrl } from '../../lib/api';
 import { useAuthGuard } from '../../hooks/useAuthGuard';
 
 export default function AdminDashboard() {
@@ -11,6 +12,7 @@ export default function AdminDashboard() {
   const [fetching, setFetching] = useState(true);
   const [stats, setStats] = useState(null);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [imageFile, setImageFile] = useState(null);
   const [newProduct, setNewProduct] = useState({ name: '', description: '', price: '', category: '', imageUrl: '' });
 
   useEffect(() => {
@@ -47,8 +49,16 @@ export default function AdminDashboard() {
   const handleAddProduct = async (e) => {
     e.preventDefault();
     try {
+      let imageUrl = newProduct.imageUrl;
+      if (imageFile) {
+        const formData = new FormData();
+        formData.append('file', imageFile);
+        const uploadResponse = await api.post('/api/products/images', formData);
+        imageUrl = uploadResponse.data.imageUrl;
+      }
       const payload = {
         ...newProduct,
+        imageUrl,
         price: parseFloat(newProduct.price)
       };
       
@@ -62,6 +72,7 @@ export default function AdminDashboard() {
       }
       
       setIsModalOpen(false);
+      setImageFile(null);
       setNewProduct({ name: '', description: '', price: '', category: '', imageUrl: '' });
     } catch (error) {
       alert('Failed to save product');
@@ -126,7 +137,7 @@ export default function AdminDashboard() {
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 bg-cream rounded-xl border-2 border-charcoal/10 flex items-center justify-center flex-shrink-0 overflow-hidden">
                           {product.imageUrl ? (
-                            <img src={product.imageUrl} alt={`WOODYZ ${product.name}`} className="w-full h-full object-cover" />
+                            <img src={resolveAssetUrl(product.imageUrl)} alt={`WOODYZ ${product.name}`} className="w-full h-full object-cover" />
                           ) : (
                             <iconify-icon icon="ph:cube-bold" class="text-2xl text-cedar/30"></iconify-icon>
                           )}
@@ -226,7 +237,14 @@ export default function AdminDashboard() {
                     </select>
                   </div>
                   <div className="md:col-span-2">
-                    <label className="block text-xs font-black uppercase tracking-widest mb-2 opacity-50">Image URL</label>
+                    <label className="block text-xs font-black uppercase tracking-widest mb-2 opacity-50">Upload Image</label>
+                    <input
+                      type="file"
+                      accept="image/jpeg,image/png,image/gif"
+                      onChange={(e) => setImageFile(e.target.files?.[0] || null)}
+                      className="w-full px-6 py-4 rounded-2xl border-3 border-charcoal bg-cream font-bold"
+                    />
+                    <label className="block text-xs font-black uppercase tracking-widest mt-4 mb-2 opacity-50">Or Image URL</label>
                     <input 
                       type="text" 
                       value={newProduct.imageUrl}

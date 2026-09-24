@@ -62,6 +62,6 @@ export function useAuthGuard({ requiredRole = null, redirectTo = '/auth/login' }
   return {
     user: finalUser,
     isReady: !loading && !!finalUser && (!requiredRole || finalUser.role === requiredRole),
-    LoadingComponent: loading || (!finalUser && !!localStorage?.getItem('token')) ? LoadingScreen : null
+    LoadingComponent: loading || (!finalUser && typeof window !== 'undefined' && !!window.localStorage?.getItem('token')) ? LoadingScreen : null
   };
 }

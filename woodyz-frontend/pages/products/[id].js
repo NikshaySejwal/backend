@@ -7,6 +7,7 @@ import { useCart } from '../../context/CartContext';
 import ProductReviews from '../../components/ProductReviews';
 import api from '../../lib/api';
 import Seo from '../../components/Seo';
+import { resolveAssetUrl } from '../../lib/api';
 
 export default function ProductDetail() {
   const router = useRouter();
@@ -86,7 +87,7 @@ export default function ProductDetail() {
             '@type': 'Product',
             name: product.name,
             description: product.description,
-            image: product.imageUrl ? [product.imageUrl] : undefined,
+            image: product.imageUrl ? [resolveAssetUrl(product.imageUrl)] : undefined,
             category: product.category || undefined,
             brand: { '@type': 'Brand', name: 'WOODYZ' },
             offers: {
@@ -119,7 +120,7 @@ export default function ProductDetail() {
               <div className="absolute -inset-3 bg-sage rounded-[56px] border-4 border-charcoal rotate-2 -z-10 shadow-[10px_10px_0px_0px_#3A322B]"></div>
               <div className="bg-white rounded-[48px] border-4 border-charcoal p-4 flex items-center justify-center aspect-square overflow-hidden">
                 {product.imageUrl ? (
-                  <img src={product.imageUrl} alt={`WOODYZ ${product.name}`} className="w-full h-full object-cover rounded-[32px]" />
+                  <img src={resolveAssetUrl(product.imageUrl)} alt={`WOODYZ ${product.name}`} className="w-full h-full object-cover rounded-[32px]" />
                 ) : (
                   <iconify-icon icon="ph:cube-bold" class="text-[120px] text-cedar/20"></iconify-icon>
                 )}

@@ -8,6 +8,11 @@ const api = axios.create({
   baseURL: API_BASE_URL,
 });
 
+export const resolveAssetUrl = (assetUrl) => {
+  if (!assetUrl || /^https?:\/\//i.test(assetUrl)) return assetUrl;
+  return `${API_BASE_URL}${assetUrl.startsWith('/') ? assetUrl : `/${assetUrl}`}`;
+};
+
 // Auto-attach auth token on client-side requests
 api.interceptors.request.use((config) => {
   if (typeof window !== 'undefined') {

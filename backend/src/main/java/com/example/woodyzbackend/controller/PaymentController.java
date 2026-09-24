@@ -39,23 +39,28 @@ public class PaymentController {
      * @return A `ResponseEntity` containing the `clientSecret` for the Stripe frontend integration.
      */
     @PostMapping("/create-payment-intent")
-    public ResponseEntity<Map<String, String>> createPaymentIntent(@RequestBody Map<String, Object> data) {
+    public ResponseEntity<?> createPaymentIntent(@RequestBody Map<String, Object> data) {
         try {
             @SuppressWarnings("unchecked")
             List<Map<String, Object>> rawItems = (List<Map<String, Object>>) data.get("items");
             if (rawItems == null || rawItems.isEmpty()) {
-                return ResponseEntity.badRequest().build();
+                return ResponseEntity.badRequest().body("Items list cannot be empty");
             }
             double amount = 0;
             for (Map<String, Object> rawItem : rawItems) {
-                Long productId = Long.valueOf(rawItem.get("productId").toString());
-                int quantity = Integer.parseInt(rawItem.get("quantity").toString());
+                Object pObj = rawItem.get("productId");
+                Object qObj = rawItem.get("quantity");
+                if (pObj == null || qObj == null) {
+                    return ResponseEntity.badRequest().body("productId and quantity are required");
+                }
+                Long productId = ((Number) pObj).longValue();
+                int quantity = ((Number) qObj).intValue();
                 if (quantity < 1 || quantity > 100) {
-                    return ResponseEntity.badRequest().build();
+                    return ResponseEntity.badRequest().body("Quantity out of bounds");
                 }
                 Product product = productRepository.findById(productId).orElse(null);
                 if (product == null) {
-                    return ResponseEntity.badRequest().build();
+                    return ResponseEntity.badRequest().body("Product not found: " + productId);
                 }
                 amount += product.getPrice() * quantity;
             }
@@ -63,13 +68,14 @@ public class PaymentController {
             
             String clientSecret = stripeService.createPaymentIntent(amount, currency);
             
-            Map<String, String> response = new HashMap<>();
+            Map<String, Object> response = new HashMap<>();
             response.put("clientSecret", clientSecret);
+            response.put("amount", amount);
             
             return ResponseEntity.ok(response);
         } catch (Exception e) {
             Map<String, String> error = new HashMap<>();
-            error.put("error", "Unable to create payment intent");
+            error.put("error", "Unable to create payment intent: " + e.getMessage());
             return ResponseEntity.badRequest().body(error);
         }
     }

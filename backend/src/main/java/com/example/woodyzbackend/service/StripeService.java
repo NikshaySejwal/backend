@@ -20,6 +20,9 @@ public class StripeService {
     }
 
     public String createPaymentIntent(double amount, String currency) throws Exception {
+        if (stripeApiKey == null || stripeApiKey.startsWith("sk_test_mock")) {
+            return "pi_mock_secret_" + System.currentTimeMillis();
+        }
         // Stripe expects amount in cents
         long amountInCents = (long) (amount * 100);
 

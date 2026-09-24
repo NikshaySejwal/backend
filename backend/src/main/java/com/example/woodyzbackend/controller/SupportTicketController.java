@@ -59,6 +59,22 @@ public class SupportTicketController {
         return ResponseEntity.ok(supportTicketService.getTicketsByUserId(currentUser.getId()));
     }
 
+    @GetMapping("/{id}")
+    public ResponseEntity<SupportTicket> getTicketById(@PathVariable Long id) {
+        User currentUser = userService.getCurrentUser();
+        if (currentUser == null) {
+            return ResponseEntity.status(401).build();
+        }
+        SupportTicket ticket = supportTicketService.getTicketById(id);
+        if (ticket == null) {
+            return ResponseEntity.notFound().build();
+        }
+        if (!ticket.getUserId().equals(currentUser.getId())) {
+            return ResponseEntity.status(403).build();
+        }
+        return ResponseEntity.ok(ticket);
+    }
+
     /**
      * Creates a new support ticket. Automatically associates the ticket with
      * the authenticated user, or labels it as "Guest Explorer".
@@ -66,7 +82,7 @@ public class SupportTicketController {
      * @param ticket The ticket details.
      * @return A `ResponseEntity` containing the created `SupportTicket`.
      */
-    @PostMapping("/")
+    @PostMapping({"", "/"})
     public ResponseEntity<SupportTicket> createTicket(@RequestBody SupportTicket ticket) {
         User currentUser = userService.getCurrentUser();
         if (currentUser != null) {
@@ -93,6 +109,27 @@ public class SupportTicketController {
             return ResponseEntity.notFound().build();
         }
         ticket.setStatus(status.replace("\"", "")); // Clean quotes if sent as string
+        return ResponseEntity.ok(supportTicketService.saveTicket(ticket));
+    }
+
+    /**
+     * Adds an admin reply/message to an existing support ticket. Restricted to
+     * ADMIN via SecurityConfig.
+     *
+     * @param id The unique identifier of the ticket.
+     * @param body The message body map (expects a "message" key).
+     * @return A {@code ResponseEntity} containing the updated ticket.
+     */
+    @PostMapping("/{id}/message")
+    public ResponseEntity<SupportTicket> addMessage(@PathVariable Long id, @RequestBody(required = false) java.util.Map<String, String> body) {
+        SupportTicket ticket = supportTicketService.getTicketById(id);
+        if (ticket == null || body == null) {
+            return ResponseEntity.notFound().build();
+        }
+        String msg = body.getOrDefault("message", "");
+        if (!msg.isBlank()) {
+            ticket.setMessage(ticket.getMessage() == null ? msg : ticket.getMessage() + "\n---\n" + msg);
+        }
         return ResponseEntity.ok(supportTicketService.saveTicket(ticket));
     }
 }

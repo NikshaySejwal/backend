@@ -3,6 +3,7 @@ import axios from 'axios';
 import Link from 'next/link';
 import Head from 'next/head';
 import Seo from '../components/Seo';
+import { resolveAssetUrl } from '../lib/api';
 
 export default function Products({ products }) {
   const [selectedCategory, setSelectedCategory] = useState('All');
@@ -74,7 +75,7 @@ export default function Products({ products }) {
                     <div className="w-full h-full bg-cream rounded-[28px] flex items-center justify-center overflow-hidden">
                       {product.imageUrl ? (
                         <img 
-                          src={product.imageUrl} 
+                          src={resolveAssetUrl(product.imageUrl)} 
                           alt={`WOODYZ ${product.name}`} 
                           className="w-full h-full object-cover transition-transform group-hover:scale-110"
                         />

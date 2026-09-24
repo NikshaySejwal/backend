@@ -1,21 +1,25 @@
 package com.example.woodyzbackend.service;
 
-import com.example.woodyzbackend.entity.Order;
-import com.example.woodyzbackend.entity.OrderStatusHistory;
-import com.example.woodyzbackend.entity.User;
-import com.example.woodyzbackend.entity.Product;
-import com.example.woodyzbackend.dto.CheckoutItemRequest;
-import com.example.woodyzbackend.repository.OrderRepository;
-import com.example.woodyzbackend.repository.OrderStatusHistoryRepository;
-import com.example.woodyzbackend.repository.UserRepository;
-import com.example.woodyzbackend.repository.ProductRepository;
+import java.time.LocalDate;
+import java.util.List;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
-import java.util.List;
+
+import com.example.woodyzbackend.dto.CheckoutItemRequest;
+import com.example.woodyzbackend.entity.Order;
+import com.example.woodyzbackend.entity.OrderStatusHistory;
+import com.example.woodyzbackend.entity.Product;
+import com.example.woodyzbackend.entity.User;
+import com.example.woodyzbackend.repository.OrderRepository;
+import com.example.woodyzbackend.repository.OrderStatusHistoryRepository;
+import com.example.woodyzbackend.repository.ProductRepository;
+import com.example.woodyzbackend.repository.UserRepository;
 
 @Service
 public class OrderService {
+
     @Autowired
     private OrderRepository orderRepository;
 
@@ -77,6 +81,7 @@ public class OrderService {
         order.setId(null);
         order.setUserId(currentUser.getId());
         order.setCustomerEmail(currentUser.getEmail());
+        order.setDeliveryAddress(currentUser.getAddress());
         if (order.getPaymentIntentId() == null || order.getItems() == null || order.getItems().isEmpty()) {
             throw new IllegalArgumentException("A verified payment and cart items are required");
         }
@@ -90,6 +95,27 @@ public class OrderService {
         }
         order.setTotalAmount(calculatedTotal);
         order.setStatus("Pending");
+        return saveOrder(order);
+    }
+
+    public Order updateStatus(Long orderId, String status, LocalDate estimatedDeliveryDate,
+            String expectedDeliveryTime, Authentication authentication) {
+        Order order = getOrderById(orderId);
+        if (order == null || !canAccessOrder(order, authentication)) {
+            return null;
+        }
+        boolean admin = authentication.getAuthorities().stream()
+                .anyMatch(authority -> "ROLE_ADMIN".equals(authority.getAuthority()));
+        if (!admin && !("CANCELLED".equalsIgnoreCase(status) && "Pending".equalsIgnoreCase(order.getStatus()))) {
+            throw new IllegalStateException("Customers can only cancel pending orders");
+        }
+        order.setStatus(status);
+        if (estimatedDeliveryDate != null) {
+            order.setEstimatedDeliveryDate(estimatedDeliveryDate);
+        }
+        if (expectedDeliveryTime != null) {
+            order.setExpectedDeliveryTime(expectedDeliveryTime);
+        }
         return saveOrder(order);
     }
 
@@ -110,7 +136,7 @@ public class OrderService {
     public Order saveOrder(Order order) {
         boolean isNew = order.getId() == null;
         Order savedOrder = orderRepository.save(order);
-        
+
         // Record History
         String historyMessage = isNew ? "Order placed successfully!" : "Order status updated to " + order.getStatus();
         orderStatusHistoryRepository.save(new OrderStatusHistory(savedOrder.getId(), savedOrder.getStatus(), historyMessage));

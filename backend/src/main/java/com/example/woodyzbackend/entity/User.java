@@ -6,16 +6,23 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 @Entity
 @Table(name = "users") // 'user' is a reserved keyword in PostgreSQL
 public class User {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String username;
     private String email;
-    private String password; // Use a library like BCrypt to hash passwords
+    @JsonIgnore
+    private String password;
     private String role = "USER";
+    private String address;
+    private String phone;
+    private boolean blacklisted;
 
     public Long getId() {
         return id;
@@ -55,5 +62,29 @@ public class User {
 
     public void setRole(String role) {
         this.role = role;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+
+    public void setAddress(String address) {
+        this.address = address;
+    }
+
+    public String getPhone() {
+        return phone;
+    }
+
+    public void setPhone(String phone) {
+        this.phone = phone;
+    }
+
+    public boolean isBlacklisted() {
+        return blacklisted;
+    }
+
+    public void setBlacklisted(boolean blacklisted) {
+        this.blacklisted = blacklisted;
     }
 }

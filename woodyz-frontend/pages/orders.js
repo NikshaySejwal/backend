@@ -67,14 +67,34 @@ export default function MyOrders() {
                     <div className="flex flex-col md:items-end gap-4">
                       <div className={`px-6 py-2 rounded-full border-3 border-charcoal font-black text-xs uppercase tracking-widest shadow-[4px_4px_0px_0px_#3A322B] ${
                         order.status === 'Paid' ? 'bg-sage text-white' : 
-                        order.status === 'Shipped' ? 'bg-orange text-white' : 'bg-maple text-charcoal'
+                        order.status === 'Shipped' ? 'bg-orange text-white' : 
+                        order.status === 'CANCELLED' ? 'bg-charcoal/20 text-charcoal' : 'bg-maple text-charcoal'
                       }`}>
                         {order.status}
                       </div>
-                      <Link href={`/track/${order.id}`} className="text-xs font-black uppercase tracking-widest text-charcoal hover:text-cedar transition-colors flex items-center gap-2">
-                        Track Journey
-                        <iconify-icon icon="ph:arrow-right-bold"></iconify-icon>
-                      </Link>
+                      <div className="flex gap-4 items-center">
+                        {order.status === 'Pending' && (
+                          <button 
+                            onClick={async () => {
+                              if (confirm('Are you sure you want to cancel this order?')) {
+                                try {
+                                  await api.put(`/api/orders/${order.id}/status`, { status: 'CANCELLED' });
+                                  fetchOrders();
+                                } catch (e) {
+                                  alert('Failed to cancel order');
+                                }
+                              }
+                            }}
+                            className="text-xs font-black uppercase tracking-widest text-red-500 hover:text-red-700 transition-colors"
+                          >
+                            Cancel
+                          </button>
+                        )}
+                        <Link href={`/track/${order.id}`} className="text-xs font-black uppercase tracking-widest text-charcoal hover:text-cedar transition-colors flex items-center gap-2">
+                          Track Journey
+                          <iconify-icon icon="ph:arrow-right-bold"></iconify-icon>
+                        </Link>
+                      </div>
                     </div>
                   </div>
                 </div>

@@ -10,6 +10,25 @@ export default function UserProfile() {
   const [reviews, setReviews] = useState([]);
   const [tickets, setTickets] = useState([]);
   const [fetching, setFetching] = useState(true);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editForm, setEditForm] = useState({ phone: '', address: '' });
+
+  useEffect(() => {
+    if (user) {
+      setEditForm({ phone: user.phone || '', address: user.address || '' });
+    }
+  }, [user]);
+
+  const handleUpdateProfile = async (e) => {
+    e.preventDefault();
+    try {
+      await api.put('/api/user/profile', editForm);
+      window.location.reload(); // Refresh to get updated user context
+    } catch (error) {
+      console.error('Failed to update profile', error);
+      alert('Failed to update profile');
+    }
+  };
 
   useEffect(() => {
     if (isReady) fetchProfileData();
@@ -57,11 +76,38 @@ export default function UserProfile() {
                   <iconify-icon icon="ph:shopping-bag-bold"></iconify-icon>
                   My Orders
                 </Link>
-                <button className="btn-pop bg-cream text-charcoal border-4 border-charcoal px-4 py-4 rounded-2xl font-black text-xs uppercase tracking-widest">
+                <button onClick={() => setIsEditing(true)} className="btn-pop bg-cream text-charcoal border-4 border-charcoal px-4 py-4 rounded-2xl font-black text-xs uppercase tracking-widest">
                   <iconify-icon icon="ph:pencil-simple-bold" class="text-xl"></iconify-icon>
                 </button>
               </div>
             </div>
+            
+            {(user.address || user.phone) && (
+              <div className="mt-8 flex flex-col md:flex-row gap-6">
+                {user.phone && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-cream rounded-xl border-2 border-charcoal flex items-center justify-center">
+                      <iconify-icon icon="ph:phone-bold" class="text-lg"></iconify-icon>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-cedar">Phone</p>
+                      <p className="font-bold">{user.phone}</p>
+                    </div>
+                  </div>
+                )}
+                {user.address && (
+                  <div className="flex items-center gap-3">
+                    <div className="w-10 h-10 bg-cream rounded-xl border-2 border-charcoal flex items-center justify-center">
+                      <iconify-icon icon="ph:map-pin-bold" class="text-lg"></iconify-icon>
+                    </div>
+                    <div>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-cedar">Address</p>
+                      <p className="font-bold">{user.address}</p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            )}
           </header>
 
           <div className="grid lg:grid-cols-2 gap-12">
@@ -135,6 +181,45 @@ export default function UserProfile() {
           </div>
         </div>
       </section>
+
+      {isEditing && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+          <div className="absolute inset-0 bg-charcoal/40 backdrop-blur-sm" onClick={() => setIsEditing(false)}></div>
+          <div className="bg-cream rounded-[48px] border-4 border-charcoal p-8 w-full max-w-lg relative z-10 shadow-[12px_12px_0px_0px_#3A322B]">
+            <div className="flex justify-between items-center mb-8">
+              <h2 className="font-display text-3xl font-black">Edit Profile</h2>
+              <button onClick={() => setIsEditing(false)} className="w-12 h-12 bg-white border-4 border-charcoal rounded-2xl flex items-center justify-center btn-pop">
+                <iconify-icon icon="ph:x-bold" class="text-xl"></iconify-icon>
+              </button>
+            </div>
+            
+            <form onSubmit={handleUpdateProfile} className="space-y-6">
+              <div>
+                <label className="block text-xs font-black uppercase tracking-widest mb-2 opacity-50">Phone Number</label>
+                <input 
+                  type="text" 
+                  value={editForm.phone}
+                  onChange={(e) => setEditForm({...editForm, phone: e.target.value})}
+                  className="w-full px-6 py-4 rounded-2xl border-3 border-charcoal bg-white font-bold"
+                  placeholder="+1 (555) 000-0000"
+                />
+              </div>
+              <div>
+                <label className="block text-xs font-black uppercase tracking-widest mb-2 opacity-50">Delivery Address</label>
+                <textarea 
+                  value={editForm.address}
+                  onChange={(e) => setEditForm({...editForm, address: e.target.value})}
+                  className="w-full px-6 py-4 rounded-2xl border-3 border-charcoal bg-white font-bold h-32 resize-none"
+                  placeholder="123 Adventure Lane&#10;Playville, TOY 12345"
+                ></textarea>
+              </div>
+              <button type="submit" className="w-full btn-pop bg-orange text-white border-4 border-charcoal py-4 rounded-2xl font-black text-lg uppercase tracking-wider">
+                Save Changes
+              </button>
+            </form>
+          </div>
+        </div>
+      )}
     </>
   );
 }

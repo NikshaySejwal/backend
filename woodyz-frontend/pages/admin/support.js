@@ -100,24 +100,39 @@ export default function AdminSupport() {
                           <span>{ticket.username || 'Anonymous'}</span>
                         </div>
                       </div>
-                      <div className="flex flex-col justify-between items-end">
-                        <div className="flex gap-2">
-                          <button 
-                            onClick={() => handleStatusUpdate(ticket.id, 'Open')}
-                            className={`p-3 rounded-xl border-2 border-charcoal transition-all ${ticket.status === 'Open' ? 'bg-orange text-white' : 'bg-white text-charcoal/40 hover:border-orange hover:text-orange'}`}
-                            title="Mark as Open"
-                          >
-                            <iconify-icon icon="ph:hourglass-bold" class="text-xl"></iconify-icon>
-                          </button>
-                          <button 
-                            onClick={() => handleStatusUpdate(ticket.id, 'Resolved')}
-                            className={`p-3 rounded-xl border-2 border-charcoal transition-all ${ticket.status === 'Resolved' ? 'bg-sage text-white' : 'bg-white text-charcoal/40 hover:border-sage hover:text-sage'}`}
-                            title="Mark as Resolved"
-                          >
-                            <iconify-icon icon="ph:check-bold" class="text-xl"></iconify-icon>
-                          </button>
+                      <div className="flex flex-col justify-between items-end gap-4">
+                        <div className="flex flex-col gap-2 w-full max-w-xs">
+                          <form onSubmit={async (e) => {
+                            e.preventDefault();
+                            const msg = e.target.elements.reply.value;
+                            try {
+                              await api.post(`/api/support/${ticket.id}/message`, { message: msg });
+                              alert('Reply sent!');
+                              e.target.reset();
+                            } catch (err) {
+                              alert('Failed to send reply');
+                            }
+                          }} className="flex gap-2">
+                            <input name="reply" placeholder="Send reply..." className="flex-1 px-3 py-2 border-2 border-charcoal rounded-xl text-xs font-bold" required />
+                            <button type="submit" className="bg-charcoal text-white px-3 py-2 rounded-xl text-xs font-black uppercase"><iconify-icon icon="ph:paper-plane-right-fill"></iconify-icon></button>
+                          </form>
+                          <div className="flex gap-2 justify-end">
+                            <button 
+                              onClick={() => handleStatusUpdate(ticket.id, 'Open')}
+                              className={`p-3 rounded-xl border-2 border-charcoal transition-all ${ticket.status === 'Open' ? 'bg-orange text-white' : 'bg-white text-charcoal/40 hover:border-orange hover:text-orange'}`}
+                              title="Mark as Open"
+                            >
+                              <iconify-icon icon="ph:hourglass-bold" class="text-xl"></iconify-icon>
+                            </button>
+                            <button 
+                              onClick={() => handleStatusUpdate(ticket.id, 'Resolved')}
+                              className={`p-3 rounded-xl border-2 border-charcoal transition-all ${ticket.status === 'Resolved' ? 'bg-sage text-white' : 'bg-white text-charcoal/40 hover:border-sage hover:text-sage'}`}
+                              title="Mark as Resolved"
+                            >
+                              <iconify-icon icon="ph:check-bold" class="text-xl"></iconify-icon>
+                            </button>
+                          </div>
                         </div>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-charcoal/20">Actions</p>
                       </div>
                     </div>
                   </div>
